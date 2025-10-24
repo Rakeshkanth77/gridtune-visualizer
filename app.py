@@ -1,6 +1,8 @@
 import streamlit as st
 from data_handler.data_handler import DataHandler
-
+from model_trainer.model_trainer import ModelTrainer
+import pandas as pd 
+from visualizer.visualizer import visualizer
 st.title("GridTune: Hyperparameter Tuning Visualizer")  # PRD objectives
 
 st.sidebar.header("Selections")  # PRD UI: Sidebar
@@ -18,7 +20,7 @@ if st.sidebar.button("Load Data"):
     st.session_state['y_train'] = y_train
     st.write(f"Data Loaded: {dataset} with {X_train.shape[0]} training samples.")
 
-from model_trainer import ModelTrainer
+
 
 param_options = {
     "Logistic Regression": {
@@ -35,16 +37,30 @@ param_grid = param_options[model]
 
 if 'X_train' in st.session_state and st.sidebar.button("Train Model"):
     with st.spinner("tunning hyperparameters..."):
-        grid , best_params, cv_results = ModelTrainer.train(
+        grid , best_params, results = ModelTrainer.train(
             st.session_state['X_train'], 
             st.session_state['y_train'], 
             model, 
             param_grid
         )
-        st.session_state['grid'] = grid
-        st.session_state['best_params'] = best_params
-        st.session_state['cv_results'] = cv_results
+        st.session_state.grid = grid
+        st.session_state.best_params = best_params
+        st.session_state.results = results
         st.success("Training complete!")
 
+if "results" in st.session_state:
+    results_df = pd.DataFrame({
+        'Params': [str(params) for params in st.session_state.results['params']],
+        'Mean Score' : st.session_state.results['mean_test_score'],
+        'Std Score' : st.session_state.results['std_test_score'],
+    })
+    st.subheader("Results Table")
+    st.dataframe(results_df)
+
+    st.subheader("Best Hyperparameters")
+    best_score= st.session_state.grid.best_score_
+    st.metric("Best Score", f"{best_score:.4f}")
+    st.json(st.session_state.best_params)
 
 
+visualizer.plot_scores(st.session_state.results)
