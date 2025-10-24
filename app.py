@@ -9,8 +9,7 @@ model = st.sidebar.selectbox("Model", ["Logistic Regression", "SVC"])  # FR: Mod
 if st.sidebar.button("Load Data"):
     X, y = DataHandler.load_data(dataset)
     X_train, X_test, y_train, y_test = DataHandler.split_data(X,y)
-    st.session.state['X_train'] = X_train
-    st.session.state['y_train'] = y_train
+    st.session_state['X_train'] = X_train
+    st.session_state['y_train'] = y_train
     st.write(f"Data Loaded: {dataset} with {X_train.shape[0]} training samples.")
 
-st.write(f"Selected: {dataset}, {model}")
