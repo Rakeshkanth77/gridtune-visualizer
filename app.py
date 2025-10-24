@@ -17,3 +17,34 @@ if st.sidebar.button("Load Data"):
     st.session_state['X_train'] = X_train
     st.session_state['y_train'] = y_train
     st.write(f"Data Loaded: {dataset} with {X_train.shape[0]} training samples.")
+
+from model_trainer import ModelTrainer
+
+param_options = {
+    "Logistic Regression": {
+        'C': [ 0.1, 1],
+        'penalty': [ 'l2']
+    },
+    "SVC": {
+        'C': [0.1, 1],
+        'kernel': ['linear']
+    }
+}
+
+param_grid = param_options[model]
+
+if 'X_train' in st.session_state and st.sidebar.button("Train Model"):
+    with st.spinner("tunning hyperparameters..."):
+        grid , best_params, cv_results = ModelTrainer.train(
+            st.session_state['X_train'], 
+            st.session_state['y_train'], 
+            model, 
+            param_grid
+        )
+        st.session_state['grid'] = grid
+        st.session_state['best_params'] = best_params
+        st.session_state['cv_results'] = cv_results
+        st.success("Training complete!")
+
+
+
