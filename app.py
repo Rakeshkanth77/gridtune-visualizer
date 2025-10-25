@@ -23,20 +23,6 @@ if st.sidebar.button("Load Data"):
     st.write(f"Data Loaded: {dataset} with {X_train.shape[0]} training samples.")
 
 
-
-# param_options = {
-#     "Logistic Regression": {
-#         'C': [ 0.1, 1],
-#         'penalty': [ 'l2']
-#     },
-#     "SVC": {
-#         'C': [0.1, 1],
-#         'kernel': ['linear']
-#     }
-# }
-
-# param_grid = param_options[model]
-
 if model == "Logistic Regression":
     c_values = st.sidebar.multiselect("C values", [0.1,1,10])
     param_grid = {'C': c_values, 'penalty': ['l2']}
@@ -44,9 +30,6 @@ elif model == "SVC":
     c_values = st.sidebar.multiselect("C values", [0.1,1,10])
     kernels = st.sidebar.multiselect("Kernels", ['linear', 'rbf'])
     param_grid = {'C': c_values, 'kernel': kernels}
-
-
-
 
 try:
     if 'X_train' in st.session_state and st.sidebar.button("Train Model"):
